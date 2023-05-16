@@ -355,4 +355,89 @@ namespace UnofficialPatch
         }
     }
 
+
+    // Dating status is visible for underage members
+    [HarmonyPatch(typeof(data_girls.girls), "GetPartnerString")]
+    public class data_girls_girls_GetPartnerString
+    {
+        public static void Postfix(ref string __result, data_girls.girls __instance)
+        {
+            string output = __result;
+            if (!__instance.Is_AOC())
+            {
+                string text = "";
+                if (!__instance.DatingData.Is_Partner_Status_Known)
+                {
+                    text += Language.Data["PROFILE__DATING_UNKNOWN"];
+                }
+                else if (__instance.DatingData.Partner_Status_Known_To_Player == data_girls.girls._dating_data._partner_status.free)
+                {
+                    text += Language.Data["PROFILE__DATING_NOT_DATING"];
+                }
+                else if (__instance.DatingData.Partner_Status_Known_To_Player == data_girls.girls._dating_data._partner_status.taken_idol)
+                {
+                    data_girls.girls girlfriend = __instance.GetGirlfriend();
+                    if (girlfriend != null)
+                    {
+                        text += Language.Insert("PROFILE__DATING_IDOL", new string[]
+                        {
+                    girlfriend.GetName(true)
+                        });
+                    }
+                    else
+                    {
+                        text += Language.Data["PROFILE__DATING_IDOL_UNKNOWN"];
+                    }
+                }
+                else if (__instance.DatingData.Partner_Status_Known_To_Player == data_girls.girls._dating_data._partner_status.taken_outside_bf)
+                {
+                    text += Language.Data["PROFILE__DATING_HAS_BF"];
+                }
+                else if (__instance.DatingData.Partner_Status_Known_To_Player == data_girls.girls._dating_data._partner_status.taken_outside_gf)
+                {
+                    text += Language.Data["PROFILE__DATING_HAS_GF"];
+                }
+                else if (__instance.DatingData.Partner_Status_Known_To_Player == data_girls.girls._dating_data._partner_status.taken_player)
+                {
+                    text += Language.Data["PROFILE__DATING_YOU"];
+                }
+                text += "\n";
+                if (__instance.DatingData.Is_Sexuality_Known)
+                {
+                    if (__instance.sexuality == data_girls.girls._sexuality.straight)
+                    {
+                        text += Language.Data["PROFILE__DATING_STRAIGHT"];
+                    }
+                    else if (__instance.sexuality == data_girls.girls._sexuality.lesbian)
+                    {
+                        text += Language.Data["PROFILE__DATING_LESBIAN"];
+                    }
+                    else
+                    {
+                        text += Language.Data["PROFILE__DATING_BI"];
+                    }
+                }
+                else
+                {
+                    text += Language.Data["PROFILE__DATING_PREF_UNKNOWN"];
+                }
+                if (__instance.DatingData.Previous_Attempt != Date_Flirt._flirt._category.NONE && __instance.DatingData.Partner_Status_Known_To_Player != data_girls.girls._dating_data._partner_status.taken_player)
+                {
+                    text += "\n";
+                    if (__instance.DatingData.Is_Uninterested || (__instance.DatingData.Is_Sexuality_Known && !Date_Flirt.IsCompatibleSexuality(__instance)))
+                    {
+                        text += Language.Data["PROFILE__DATING_NOT_INTERESTED"];
+                    }
+                    else
+                    {
+                        text += Language.Data["PROFILE__DATING_INTERESTED"];
+                    }
+                }
+                output = text;
+            }
+            __result = output;
+        }
+    }
+
+
 }
