@@ -19,3 +19,4 @@ Requires [IM-HarmonyIntegration](https://github.com/ui3TD/IM-HarmonyIntegration)
 - Fixed so that when girls dating each other break up, their relationship status is no longer known.
 - Fixed fan age pie charts to show correct proportions.
 - Fixed world tour revenue text color to consider savings.
+- Fixed dating status to show status of underage girls, so you can actually track scandals.
